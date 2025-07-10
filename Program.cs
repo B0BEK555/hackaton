@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -11,18 +11,27 @@ class Program
     static void Main()
     {
         var app = new Application(Eto.Platforms.Gtk);
-        string apiKey = "ad2ca6f113cbb990beb256aafaf1e7a1";
+        string apiKey = "ad2ca6f113cbb990beb256aafaf1e7a1"; // secret api key, don't look!
 
-        var label = new Label { Text = "Zadej město:" };
+        var label = new Label { Text = "Zadej město:" }; // tohle nastavuje variable
         var textBox = new TextBox { Width = 50, Height = 10 };
         var button = new Button { Text = "Zjisti počasí" };
 
-        var fieldWeather = new Label { Text = "Město" };
+        var fieldCity = new Label { Text = "Město" };
+        var fieldCountry = new Label { Text = "Země" };
+        var fieldConditions = new Label { Text = "Podmínky" };
+        var fieldTemp = new Label { Text = "Teplota" };
+        var filedHumidity = new Label { Text = "Vlhkost" };
+
 
         var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = 10 };
         layout.AddRow(label);
         layout.AddRow(textBox);
-        layout.AddRow(fieldWeather);
+        layout.AddRow(fieldCity);
+        layout.AddRow(fieldCountry);
+        layout.AddRow(fieldConditions);
+        layout.AddRow(fieldTemp);
+        layout.AddRow(filedHumidity);
         layout.AddRow(button);
 
         var mainForm = new Form
@@ -35,8 +44,10 @@ class Program
         button.Click += async (sender, e) =>
         {
             string city = textBox.Text.Trim();
-
-            fieldWeather.Text = $"Město: {city}";
+            string country = "";
+            double temp = 0;
+            string conditions = "";
+            int humidity = 0;
 
             if (string.IsNullOrEmpty(city))
             {
@@ -57,14 +68,13 @@ class Program
                 var doc = JsonDocument.Parse(json);
                 var root = doc.RootElement;
 
-                // Získáme teplotu a vlhkost z "main"
-                if (root.TryGetProperty("main", out JsonElement main))
-                {
-                    double temp = main.GetProperty("temp").GetDouble();
-                    int humidity = main.GetProperty("humidity").GetInt32();
+                if (root.TryGetProperty("main", out JsonElement main) & root.TryGetProperty("sys", out JsonElement sys))
+                { 
+                    temp = main.GetProperty("temp").GetDouble();
+                    humidity = main.GetProperty("humidity").GetInt32();
+                    country = sys.GetProperty("country").GetString();
 
-                    // Získáme popis počasí z pole "weather"
-                    string conditions = "Neznámé";
+                    conditions = "Neznámé";
                     if (root.TryGetProperty("weather", out JsonElement weatherArray) && weatherArray.GetArrayLength() > 0)
                     {
                         conditions = weatherArray[0].GetProperty("description").GetString();
@@ -81,7 +91,19 @@ class Program
                 {
                     MessageBox.Show(mainForm, "Nepodařilo se načíst aktuální počasí.");
                 }
+            
+
+            fieldCity.Text = $"Město: {city}";
+            fieldCountry.Text = $"Země: {country}";
+            fieldConditions.Text = $"Podmínky: {conditions}";
+            fieldTemp.Text = $"Teplota: {temp}°C";
+            filedHumidity.Text = $"Vlhkost: {humidity}%";
             }
+
+
+
+
+
             catch (HttpRequestException httpEx)
             {
                 MessageBox.Show(mainForm, $"HTTP chyba: {httpEx.Message}");
