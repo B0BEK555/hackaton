@@ -15,16 +15,16 @@ class Program
 
         var label = new Label { Text = "Zadej město:" }; // tohle nastavuje variable
         var textBox = new TextBox { Width = 50, Height = 10 };
-        var button = new Button { Text = "Zjisti počasí" };
+        var button = new Button { Text = "Check" };
 
-        var fieldCity = new Label { Text = "Město" };
-        var fieldCountry = new Label { Text = "Země" };
-        var fieldConditions = new Label { Text = "Podmínky" };
-        var fieldTemp = new Label { Text = "Teplota" };
-        var filedHumidity = new Label { Text = "Vlhkost" };
+        var fieldCity = new Label { Text = "Město:" };
+        var fieldCountry = new Label { Text = "Země:" };
+        var fieldConditions = new Label { Text = "Podmínky:" };
+        var fieldTemp = new Label { Text = "Teplota:" };
+        var filedHumidity = new Label { Text = "Vlhkost:" };
 
 
-        var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = 10 };
+        var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = 10 }; // tohle přidává objekty do layoutu 😎
         layout.AddRow(label);
         layout.AddRow(textBox);
         layout.AddRow(fieldCity);
@@ -37,13 +37,14 @@ class Program
         var mainForm = new Form
         {
             Title = "Weather App",
-            ClientSize = new Size(250, 400),
+            ClientSize = new Size(250, 220),
             Content = layout
         };
 
         button.Click += async (sender, e) =>
         {
-            string city = textBox.Text.Trim();
+            // Cool Placeholdery 😎😎😎
+            string city = textBox.Text.Trim(); // *tenhle zrovna není :(
             string country = "";
             double temp = 0;
             string conditions = "";
@@ -79,13 +80,6 @@ class Program
                     {
                         conditions = weatherArray[0].GetProperty("description").GetString();
                     }
-
-                    string info = $"Počasí v {city}:\n" +
-                                $"Teplota: {temp} °C\n" +
-                                $"Podmínky: {conditions}\n" +
-                                $"Vlhkost: {humidity} %";
-
-                    MessageBox.Show(mainForm, info);
                 }
                 else
                 {
